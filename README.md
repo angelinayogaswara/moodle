@@ -1,51 +1,36 @@
 # Aplikasi Web "Moodle"
 
-![logo](moodle_logo_TM.svg)
-
 ## Sekilas Tentang
 
 Moodle adalah Learning Management System (LMS) gratis dan open-source yang dikembangkan oleh Martin Dougiamas menggunakan bahasa pemrograman PHP dan didistribusikan berdasarkan GNU General Public License (GNU GPL). Moodle digunakan untuk menyediakan lingkungan pembelajaran daring yang terpadu bagi pendidik, administrator, serta peserta didik. Versi pertama Moodle dirilis pada 20 Agustus 2002 dan pengembangannya masih terus dilakukan secara aktif di bawah Moodle HQ. Aplikasi moodle disediakan gratis untuk Android dan iOS.
 
 ## Instalasi
 
-**Spesifikasi Server & Identitas Lingkungan**
+**Prasyarat**
 
 - **Penyedia VPS:** Helipod (Region: ap-jakarta, Indonesia)
-- **Alamat IP Publik:** `43.173.53.5`
+- **Spesifikasi VM:** 2 vCPU, 4 GB RAM, 60 GB SSD
 - **Domain Aktif:** `moodle-kdjk2.my.id` (A Record: `43.173.53.5`), `www.moodle-kdjk2.my.id`
 - **Sistem Operasi:** Ubuntu 24.04.4 LTS (Noble Numbat - 64-bit)
-- **Spesifikasi VM:** 2 vCPU, 4 GB RAM, 60 GB SSD
+- **Cloud Firewall Helipod**: Port 22 (SSH), Port 80 (HTTP), dan Port 443 (HTTPS).
+- **Login SSH**: public key ED25519
 - **Web Server:** Apache/2.4.58 (Ubuntu)
 - **Database Server:** MariaDB Server 10.11.14
 - **Bahasa Pemrograman / Runtime:** PHP 8.3.6 (NTS, OPcache aktif)
-- **Versi Moodle:** Moodle 5.2.4+ (Build: 20261013 - Cabang stabil 5.2, bukan LTS)
-- **Protokol Keamanan:** HTTPS (TLS 1.3) via Let's Encrypt RSA 3072-bit (Auto-Renew aktif)
-- **Status Autentikasi SSH & Firewall Saat Ini:**
-  - Login SSH menggunakan public key ED25519 sudah terpasang dan berfungsi.
-  - Namun autentikasi password SSH pada server saat ini **masih aktif** (belum dimatikan demi kehati-hatian).
-  - Firewall internal host (`UFW`) **belum aktif** (`Status: inactive`).
-  - Saat ini pengamanan port sepenuhnya bergantung pada **Cloud Firewall Helipod** yang telah dikonfigurasi membuka Port 22 (SSH), Port 80 (HTTP), dan Port 443 (HTTPS).
-
-
 
 **Proses Instalasi**
 
-> [!NOTE]
-> **Kebijakan Keamanan Kredensial:** Seluruh kata sandi (database, akun administrator, dan server) dibuat menggunakan generator acak kriptografi dan hanya tersimpan pada berkas lokal server `/root/moodle-credentials.txt` dengan hak akses terbatas (`chmod 600`). Dokumen ini **tidak memuat password apa pun** demi keamanan laporan publik (*zero hardcoded secrets*).
-
-### Langkah 1: Pengaturan Awal Sistem & Zona Waktu
-1. Memverifikasi fingerprint host ED25519 server (`SHA256:aYWZ+J1qLLF10GzNqsesyJmX+0mUz2lcXLcjKmhOw30`).
-2. Mengatur zona waktu ke Waktu Indonesia Barat (WIB):
+1. Login ke server lewat SSH.
+   ```bash
+   ssh ubuntu@moodle-kdjk2.my.id
+   ```
+2. Verifikasi fingerprint host ED25519 server (SHA256:aYWZ+J1qLLF10GzNqsesyJmX+0mUz2lcXLcjKmhOw30).
+3. Atur zona waktu ke WIB dan perbarui seluruh paket sistem.
    ```bash
    sudo timedatectl set-timezone Asia/Jakarta
-   ```
-3. Memperbarui daftar paket repositori dan paket OS:
-   ```bash
    sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y
    ```
-
-### Langkah 2: Pemasangan Stack Web Server, PHP 8.3, & Dependensi
-1. Memasang paket LAMP stack serta dependensi lengkap Moodle:
+4. Pasang paket LAMP stack serta dependensi lengkap Moodle.
    ```bash
    sudo DEBIAN_FRONTEND=noninteractive apt install -y \
        apache2 mariadb-server libapache2-mod-php \
@@ -53,15 +38,13 @@ Moodle adalah Learning Management System (LMS) gratis dan open-source yang dikem
        php-mbstring php-xml php-zip php-soap \
        unzip git curl composer certbot python3-certbot-apache
    ```
-2. Mengonfigurasi ServerName global pada Apache guna menghilangkan peringatan `AH00558`:
+5. Konfigurasi ServerName global pada Apache untuk menghilangkan peringatan `AH00558`.
    ```bash
    echo "ServerName localhost" | sudo tee /etc/apache2/conf-available/servername.conf
    sudo a2enconf servername
    sudo systemctl reload apache2
    ```
-
-### Langkah 3: Pengamanan MariaDB & Setup Database Moodle
-1. Menerapkan hardening pada MariaDB secara otomatis:
+6. Terapkan hardening pada MariaDB secara otomatis.
    ```bash
    sudo mariadb << 'EOSQL'
    DELETE FROM mysql.user WHERE User='';
@@ -71,8 +54,7 @@ Moodle adalah Learning Management System (LMS) gratis dan open-source yang dikem
    FLUSH PRIVILEGES;
    EOSQL
    ```
-2. **Pembuatan Kredensial Acak (Metode Eksekusi Live):**
-   Pada server ini, kata sandi dibuat secara terprogram tanpa hardcode. Format yang dieksekusi saat provisioning:
+7. Buat kredensial acak untuk database dan admin Moodle. Pada server ini, kata sandi dibuat secara terprogram tanpa hardcode.
    ```bash
    DB_PASS=$(openssl rand -hex 16)
    # Format kombinasi awal yang dijalankan pada server untuk memenuhi kompleksitas Moodle:
@@ -88,49 +70,40 @@ Moodle adalah Learning Management System (LMS) gratis dan open-source yang dikem
    sudo chmod 600 /root/moodle-credentials.txt
    sudo chown root:root /root/moodle-credentials.txt
    ```
-   *(Catatan: Pada berkas skrip instalasi terbaru `install-moodle.sh`, generator telah diperbarui menggunakan metode acak murni `$(openssl rand -base64 12 | tr -dc 'a-zA-Z0-9')!A1` tanpa kata dasar).*
-3. Membuat database dengan encoding `utf8mb4` dan user dengan hak terbatas (prinsip *least privilege*):
+8. Buat database dengan encoding `utf8mb4` dan user dengan hak terbatas (prinsip *least privilege*):
    ```bash
    sudo mariadb -e "CREATE DATABASE IF NOT EXISTS moodle DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
    sudo mariadb -e "CREATE USER IF NOT EXISTS 'moodleuser'@'localhost' IDENTIFIED BY '${DB_PASS}';"
    sudo mariadb -e "GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,CREATE TEMPORARY TABLES,DROP,INDEX,ALTER ON moodle.* TO 'moodleuser'@'localhost';"
    sudo mariadb -e "FLUSH PRIVILEGES;"
    ```
-
-### Langkah 4: Pengunduhan Moodle & Pembuatan Direktori Data
-1. Mengunduh kode sumber Moodle versi cabang stabil 5.2 (bukan LTS):
+9. Unduh Moodle versi cabang stabil 5.2 (bukan LTS) lewat git.
    ```bash
    sudo git clone --depth 1 --branch MOODLE_502_STABLE https://github.com/moodle/moodle.git /var/www/moodle
    ```
-2. Membuat direktori `moodledata` di luar *document root* web untuk keamanan file materi/tugas:
+10. Membuat direktori `moodledata` di luar *document root* web agar berkas materi dan tugas tidak bisa diakses langsung dari internet.
    ```bash
    sudo mkdir -p /var/moodledata
    sudo chown -R www-data:www-data /var/moodledata
    sudo chmod 770 /var/moodledata
    ```
-
-### Langkah 5: Pemasangan Dependensi Composer (Wajib Moodle 5.1+)
-Moodle versi 5.1 ke atas mewajibkan modul dependensi vendor (seperti Slim Framework untuk routing engine):
-```bash
-sudo chown -R www-data:www-data /var/www/moodle
-cd /var/www/moodle
-sudo -u www-data env COMPOSER_HOME=/tmp/composer composer install --no-dev --classmap-authoritative
-```
-
-### Langkah 6: Tuning Konfigurasi PHP 8.3
-Menyesuaikan konfigurasi PHP untuk batas variabel formulir dan kuota berkas:
-```bash
-sudo tee /etc/php/8.3/apache2/conf.d/99-moodle.ini << 'EOF'
-max_input_vars = 5000
-upload_max_filesize = 100M
-post_max_size = 100M
-memory_limit = 256M
-EOF
-sudo cp /etc/php/8.3/apache2/conf.d/99-moodle.ini /etc/php/8.3/cli/conf.d/99-moodle.ini
-```
-
-### Langkah 7: Konfigurasi VirtualHost Apache & Moodle Router Fix
-1. Mengonfigurasi VirtualHost Apache mengarah ke direktori `/public`:
+11. Pasang dependensi PHP dengan Composer. Moodle versi 5.1 ke atas mewajibkan modul dependensi vendor.
+    ```bash
+    sudo chown -R www-data:www-data /var/www/moodle
+    cd /var/www/moodle
+    sudo -u www-data env COMPOSER_HOME=/tmp/composer composer install --no-dev --classmap-authoritative
+    ```
+12. Sesuaikan konfigurasi PHP untuk batas variabel formulir dan kuota berkas
+    ```bash
+    sudo tee /etc/php/8.3/apache2/conf.d/99-moodle.ini << 'EOF'
+    max_input_vars = 5000
+    upload_max_filesize = 100M
+    post_max_size = 100M
+    memory_limit = 256M
+    EOF
+    sudo cp /etc/php/8.3/apache2/conf.d/99-moodle.ini /etc/php/8.3/cli/conf.d/99-moodle.ini
+    ```
+13. Buat VirtualHost Apache yang mengarah ke direktori `/public`.
    ```bash
    sudo tee /etc/apache2/sites-available/moodle.conf << 'EOF'
    <VirtualHost *:80>
@@ -151,21 +124,18 @@ sudo cp /etc/php/8.3/apache2/conf.d/99-moodle.ini /etc/php/8.3/cli/conf.d/99-moo
    sudo a2dissite 000-default
    sudo a2ensite moodle
    ```
-2. **Penerapan Router Fix pada mod_php:**
-   Membungkus `SetHandler` di `php8.3.conf` dengan `<If "-f %{REQUEST_FILENAME}">` agar route virtual Moodle diproses via `/r.php`:
+14. Perbaiki router Moodle. `SetHandler` di `php8.3.conf` dibungkus dengan `<If "-f %{REQUEST_FILENAME}">` agar route virtual Moodle diproses via `/r.php`:
    ```bash
    sudo cp /etc/apache2/mods-available/php8.3.conf /root/php8.3.conf.bak
    sudo sed -i 's|^\(\s*\)SetHandler application/x-httpd-php$|\1<If "-f %{REQUEST_FILENAME}">\n\1    SetHandler application/x-httpd-php\n\1</If>|' /etc/apache2/mods-available/php8.3.conf
    sudo apache2ctl configtest
    sudo systemctl restart apache2
    ```
-3. Menambahkan entri loopback `/etc/hosts` di server sebagai *workaround* request internal:
+15. Tambahkan entri loopback `/etc/hosts` di server agar request dari server ke domainnya sendiri tidak keluar lewat IP publik.
    ```bash
    echo "127.0.0.1 moodle-kdjk2.my.id www.moodle-kdjk2.my.id" | sudo tee -a /etc/hosts
    ```
-
-### Langkah 8: Eksekusi Instalasi CLI Moodle
-1. Menjalankan proses instalasi non-interaktif:
+16. Jalankan installer Moodle lewat CLI.
    ```bash
    sudo -u www-data /usr/bin/php /var/www/moodle/admin/cli/install.php \
        --non-interactive \
@@ -185,18 +155,13 @@ sudo cp /etc/php/8.3/apache2/conf.d/99-moodle.ini /etc/php/8.3/cli/conf.d/99-moo
        --adminemail="<email>" \
        --lang="id"
    ```
-2. Menambahkan flag konfirmasi router pada `config.php`:
+17. Beri tahu Moodle bahwa router sudah dikonfigurasi, lalu kunci kembali izin kode sumber.
    ```bash
    sudo sed -i '/lib\/setup.php/i $CFG->routerconfigured = true;' /var/www/moodle/config.php
-   ```
-3. Mengunci kembali izin kode sumber:
-   ```bash
    sudo chown -R root:root /var/www/moodle
    sudo chmod 644 /var/www/moodle/config.php
    ```
-
-### Langkah 9: Konfigurasi HTTPS dengan Let's Encrypt (Certbot)
-1. Menerbitkan sertifikat TLS dan mengaktifkan pengalihan HTTP -> HTTPS:
+18. Terbitkan sertifikat TLS dan mengaktifkan pengalihan HTTP -> HTTPS, lalu uji perpanjangan otomatisnya.
    ```bash
    sudo certbot --apache \
        -d moodle-kdjk2.my.id \
@@ -205,48 +170,19 @@ sudo cp /etc/php/8.3/apache2/conf.d/99-moodle.ini /etc/php/8.3/cli/conf.d/99-moo
        --agree-tos \
        -m "<email>" \
        --redirect
-   ```
-2. Menguji otomatisasi perpanjangan berkala:
-   ```bash
    sudo certbot renew --dry-run
    ```
-
-### Langkah 10: Penjadwalan Pemeliharaan (Cron & Backup)
-1. **Cron Tugas Moodle (Tiap Menit):**
+19. Pasang cron Moodle agar tugas berjalan tiap menit.
    ```bash
    echo "* * * * * /usr/bin/php /var/www/moodle/admin/cli/cron.php >/dev/null" | sudo crontab -u www-data -
    ```
-2. **Skrip Backup Otomatis (`/usr/local/bin/moodle-backup.sh`):**
-   ```bash
-   sudo tee /usr/local/bin/moodle-backup.sh << 'EOF'
-   #!/bin/bash
-   set -euo pipefail
-   BACKUP_DIR=/var/backups/moodle
-   DATE=$(date +%F_%H%M)
-   mkdir -p "$BACKUP_DIR"
-
-   # Backup database MariaDB
-   mariadb-dump --single-transaction moodle | gzip > "$BACKUP_DIR/moodle-db-$DATE.sql.gz"
-
-   # Backup data materi & tugas tanpa cache volatile
-   tar -czf "$BACKUP_DIR/moodledata-$DATE.tar.gz" \
-       --exclude=moodledata/cache \
-       --exclude=moodledata/localcache \
-       --exclude=moodledata/temp \
-       --exclude=moodledata/sessions \
-       -C /var moodledata
-
-   find "$BACKUP_DIR" -type f -mtime +7 -delete
-   echo "Backup selesai: $DATE"
-   EOF
-   sudo chmod +x /usr/local/bin/moodle-backup.sh
-   ```
-3. **Penjadwalan Backup Mingguan (Tiap Minggu 02:00 WIB):**
-   ```bash
-   (sudo crontab -l 2>/dev/null | grep -v "moodle-backup.sh" || true; echo "0 2 * * 0 /usr/local/bin/moodle-backup.sh >> /var/log/moodle-backup.log 2>&1") | sudo crontab -
-   ```
-
----
+20. Verifikasi dari terminal
+    ```bash
+    curl -I http://moodle-kdjk2.my.id/
+    curl -I https://moodle-kdjk2.my.id/
+    curl -I https://moodle-kdjk2.my.id/login/index.php
+    curl -I https://moodle-kdjk2.my.id/not/a/valid/request
+    ```
 
 ## 3. Masalah Nyata yang Dialami & Solusinya
 
