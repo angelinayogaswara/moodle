@@ -183,12 +183,7 @@ Moodle adalah Learning Management System (LMS) gratis dan open-source yang dikem
     curl -I https://moodle-kdjk2.my.id/not/a/valid/request
     ```
     
-##  Maintenance (opsional)
 
-Setting tambahan untuk maintenance secara periodik, misalnya:
-- buat backup database tiap pekan
-- hapus direktori sampah tiap hari
-- dll
 
 ## Cara Pemakaian
 
@@ -202,4 +197,45 @@ Setting tambahan untuk maintenance secara periodik, misalnya:
 
 
 **Fungsi-fungsi Utama**
-Show Image
+
+1. Mata kuliah
+Administrator dapat mengakses *Administrasi situs > Mata kuliah > Kelola mata kuliah dan kategori > Buat mata kuliah baru* untuk membuat mata kuliah baru.
+![Halaman mata kuliah yang baru dibuat oleh administrator](images/admin-pembuatan-course.png)
+
+Dosen dapat mengisi topik pada halaman mata kuliah dengan materi tertentu.
+![Halaman mata kuliah setelah diisi dosen](images/view-course.png)
+ 
+2. Materi
+Dosen dapat mengunggah berkas dengan ukuran maksimum sebesar 100 MB.
+![Dosen membuat materi PPT Pertemuan 1](images/dosen-pembuatan-materi.png)
+ 
+Mahasiswa dapat membuka materi yang telah diunggah dari halaman mata kuliah.
+ 
+3. Tugas
+Dosen dapat membuat tugas dengan mengisi nama dan deskripsi penugasan, lalu mengatur tanggal pengajuan dan jatuh tempo.
+ 
+![Dosen membuat penugasan Tugas Praktikum 1](images/dosen-pembuatan-tugas.png)
+ 
+Mahasiswa dapat mengajukan tugas dengan mengunggah pilihan berkas.
+![Mahasiswa mengunggah berkas tugas](images/siswa-submit-tugas.png)
+ 
+Setelah berkas diunggah, halaman tugas menampilkan status pengajuan, status penilaian, dan waktu tersisa. Tugas yang sudah diunggah dapat diedit atau dihapus dengan *Edit pengajuan* atau *Hapus pengajuan*.
+![Status pengajuan tugas oleh mahasiswa](images/siswa-pengumpulan-tugas.png)
+ 
+Dosen dapat menilai tugas dengan membuka pengajuan tugas dari seorang mahasiswa. Nilai dapat diisi dengan rentang 0-100. Siswa akan mendapat notifikasi apabila kolom kabari siswa dicentang.
+![Dosen menilai tugas](images/dosen-menilai-tugas.png)
+ 
+Mahasiswa dapat melihat nilai tugas pada bagian *Umpan balik* di halaman tugas.
+ 
+![Mahasiswa melihat nilai tugas](images/siswa-melihat-nilai-tugas.png)
+ 
+4. Kuis
+Dosen dapat membuat soal di bank soal. Soal-soal ini akan digunakan untuk menyusun kuis. Soal yang dibuat dapat memiliki tipe dan poin yang berbeda.
+![Dosen membuat soal di bank soal](images/dosen-pembuatan-bank-soal.png)
+![Dosen menyusun soal pada Kuis Pertemuan 1](images/dosen-pembuatan-soal-kuis.png)
+ 
+Mahasiswa dapat membuka kuis dan menjawab soal satu per satu, lalu berpindah halaman lewat tombol *Halaman selanjutnya*.
+![Mahasiswa mengerjakan kuis](images/siswa-pengerjaan-kuis.png)
+
+Setelah kuis dikerjakan, mahasiswa dapat membuka halaman tinjauan yang menampilkan status, waktu mulai dan selesai, durasi, serta nilai dari kuis tersebut. 
+![Mahasiswa meninjau hasil kuis](images/siswa-review-kuis.png)
