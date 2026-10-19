@@ -187,15 +187,6 @@ Moodle adalah Learning Management System (LMS) gratis dan open-source yang dikem
 
 ## Cara Pemakaian
 
-**Tampilan Aplikasi Web**
-
-1. Halaman login: Pengguna dapat masuk menggunakan username dan password
-
-2. Dasbor: Berisi daftar mata kuliah, kalender, dan tenggat tugas.
-
-3. Mata Kuliah: Isi mata kuliah dikelompokkan ke beberapa segmen, yaitu materi, tugas, kuis, dan forum.
-
-
 **Fungsi-fungsi Utama**
 
 1. Mata kuliah
