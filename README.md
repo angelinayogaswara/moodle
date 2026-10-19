@@ -24,7 +24,7 @@ Moodle adalah Learning Management System (LMS) gratis dan open-source yang dikem
    ```bash
    ssh ubuntu@moodle-kdjk2.my.id
    ```
-2. Verifikasi fingerprint host ED25519 server (SHA256:aYWZ+J1qLLF10GzNqsesyJmX+0mUz2lcXLcjKmhOw30).
+2. Verifikasi fingerprint host ED25519 server `(SHA256:aYWZ+J1qLLF10GzNqsesyJmX+0mUz2lcXLcjKmhOw30)`.
 3. Atur zona waktu ke WIB dan perbarui seluruh paket sistem.
    ```bash
    sudo timedatectl set-timezone Asia/Jakarta
