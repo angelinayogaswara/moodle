@@ -199,42 +199,41 @@ Moodle adalah Learning Management System (LMS) gratis dan open-source yang dikem
 **Fungsi-fungsi Utama**
 
 1. Mata kuliah
-Administrator dapat mengakses \*Administrasi situs > Mata kuliah > Kelola mata kuliah dan kategori > Buat mata kuliah baru\* untuk membuat mata kuliah baru.
-![Halaman mata kuliah yang baru dibuat oleh administrator]\(dokumentasi/admin-pembuatan-course.png)
+   Administrator dapat mengakses *Administrasi situs > Mata kuliah > Kelola mata kuliah dan kategori > Buat mata kuliah baru* untuk membuat mata kuliah baru.
+   ![Halaman mata kuliah yang baru dibuat oleh administrator](dokumentasi/admin-pembuatan-course.png)
 
-Dosen dapat mengisi topik pada halaman mata kuliah dengan materi tertentu.
-![Halaman mata kuliah setelah diisi dosen]\(dokumentasi/view-course.png)
+   Dosen dapat mengisi topik pada halaman mata kuliah dengan materi tertentu.
+   ![Halaman mata kuliah setelah diisi dosen](dokumentasi/view-course.png)
 
 2. Materi
-Dosen dapat mengunggah berkas dengan ukuran maksimum sebesar 100 MB.
-![Dosen membuat materi PPT Pertemuan 1]\(dokumentasi/dosen-pembuatan-materi.png)
+   Dosen dapat mengunggah berkas dengan ukuran maksimum sebesar 100 MB.
+   ![Dosen membuat materi PPT Pertemuan 1](dokumentasi/dosen-pembuatan-materi.png)
 
-Mahasiswa dapat membuka materi yang telah diunggah dari halaman mata kuliah.
+   Mahasiswa dapat membuka materi yang telah diunggah dari halaman mata kuliah.
 
 3. Tugas
-Dosen dapat membuat tugas dengan mengisi nama dan deskripsi penugasan, lalu mengatur tanggal pengajuan dan jatuh tempo.
-![Dosen membuat penugasan Tugas Praktikum 1]\(dokumentasi/dosen-pembuatan-tugas.png)
+   Dosen dapat membuat tugas dengan mengisi nama dan deskripsi penugasan, lalu mengatur tanggal pengajuan dan jatuh tempo.
+   ![Dosen membuat penugasan Tugas Praktikum 1](dokumentasi/dosen-pembuatan-tugas.png)
 
-Mahasiswa dapat mengajukan tugas dengan mengunggah pilihan berkas.
-![Mahasiswa mengunggah berkas tugas]\(dokumentasi/siswa-submit-tugas.png)
+   Mahasiswa dapat mengajukan tugas dengan mengunggah pilihan berkas.
+   ![Mahasiswa mengunggah berkas tugas](dokumentasi/siswa-submit-tugas.png)
 
-Setelah berkas diunggah, halaman tugas menampilkan status pengajuan, status penilaian, dan waktu tersisa. Tugas yang sudah diunggah dapat diedit atau dihapus dengan \*Edit pengajuan\* atau \*Hapus pengajuan\*.
-![Status pengajuan tugas oleh mahasiswa]\(dokumentasi/siswa-pengumpulan-tugas.png)
+   Setelah berkas diunggah, halaman tugas menampilkan status pengajuan, status penilaian, dan waktu tersisa. Tugas yang sudah diunggah dapat diedit atau dihapus dengan *Edit pengajuan* atau *Hapus pengajuan*.
+   ![Status pengajuan tugas oleh mahasiswa](dokumentasi/siswa-pengumpulan-tugas.png)
 
-Dosen dapat menilai tugas dengan membuka pengajuan tugas dari seorang mahasiswa. Nilai dapat diisi dengan rentang 0-100. Siswa akan mendapat notifikasi apabila kolom kabari siswa dicentang.
-![Dosen menilai tugas]\(dokumentasi/dosen-menilai-tugas.png)
+   Dosen dapat menilai tugas dengan membuka pengajuan tugas dari seorang mahasiswa. Nilai dapat diisi dengan rentang 0-100. Siswa akan mendapat notifikasi apabila kolom kabari siswa dicentang.
+   ![Dosen menilai tugas](dokumentasi/dosen-menilai-tugas.png)
 
-Mahasiswa dapat melihat nilai tugas pada bagian \*Umpan balik\* di halaman tugas.
-
-![Mahasiswa melihat nilai tugas]\(dokumentasi/siswa-melihat-nilai-tugas.png)
+   Mahasiswa dapat melihat nilai tugas pada bagian *Umpan balik* di halaman tugas.
+   ![Mahasiswa melihat nilai tugas](dokumentasi/siswa-melihat-nilai-tugas.png)
 
 4. Kuis
-Dosen dapat membuat soal di bank soal. Soal-soal ini akan digunakan untuk menyusun kuis. Soal yang dibuat dapat memiliki tipe dan poin yang berbeda.
-![Dosen membuat soal di bank soal]\(dokumentasi/dosen-pembuatan-bank-soal.png)
-![Dosen menyusun soal pada Kuis Pertemuan 1]\(dokumentasi/dosen-pembuatan-soal-kuis.png)
+   Dosen dapat membuat soal di bank soal. Soal-soal ini akan digunakan untuk menyusun kuis. Soal yang dibuat dapat memiliki tipe dan poin yang berbeda.
+   ![Dosen membuat soal di bank soal](dokumentasi/dosen-pembuatan-bank-soal.png)
+   ![Dosen menyusun soal pada Kuis Pertemuan 1](dokumentasi/dosen-pembuatan-soal-kuis.png)
 
-Mahasiswa dapat membuka kuis dan menjawab soal satu per satu, lalu berpindah halaman lewat tombol \*Halaman selanjutnya\*.
-![Mahasiswa mengerjakan kuis]\(dokumentasi/siswa-pengerjaan-kuis.png)
+   Mahasiswa dapat membuka kuis dan menjawab soal satu per satu, lalu berpindah halaman lewat tombol *Halaman selanjutnya*.
+   ![Mahasiswa mengerjakan kuis](dokumentasi/siswa-pengerjaan-kuis.png)
 
-Setelah kuis dikerjakan, mahasiswa dapat membuka halaman tinjauan yang menampilkan status, waktu mulai dan selesai, durasi, serta nilai dari kuis tersebut. 
-![Mahasiswa meninjau hasil kuis]\(dokumentasi/siswa-review-kuis.png)
+   Setelah kuis dikerjakan, mahasiswa dapat membuka halaman tinjauan yang menampilkan status, waktu mulai dan selesai, durasi, serta nilai dari kuis tersebut.
+   ![Mahasiswa meninjau hasil kuis](dokumentasi/siswa-review-kuis.png)
