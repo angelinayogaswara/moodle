@@ -233,6 +233,34 @@ Moodle adalah Learning Management System (LMS) gratis dan open-source yang dikem
 ## Pembahasan
 
 **Perbandingan dengan Aplikasi Web Sejenis**
+
+1. Moodle
+   Fitur utama: Manajemen kursus dan peserta, tugas dan kuis, forum diskusi, gradebook, dan plugin tambahan. Ekosistem plugin besar dan tersedia dalam lebih dari 100 bahasa.
+   Kebutuhan hardware: disk 200 MB untuk kode Moodle dan ditambah ruang untuk konten (disarankan minimal 5GB), RAM minimal 512 MB dan disarankan 1 GB atau lebih, serta prosesor minimal 1 GHz (disarankan dual-core 2 GHz). Untuk server produksi besar, disarankan RAM 8 GB atau lebih.
+   Lisensi: GNU GPL v3.
+   Teknologi: aplikasi PHP dengan database relasional (MariaDB, MySQL, PostgreSQL, Microsoft SQL Server, atau Oracle). Moodle 5.1 membutuhkan PHP 8.2 sampai 8.4.
+   
+2. Canvas LMS (Instructure)
+   Fitur: mengelola kursus, pendaftaran peserta, tugas, kuis, diskusi, dan penilaian. Dikenal dengan UI yang baik dan gradebook yang kuat.
+   Kebutuhan server: Ruby on Rails, PostgreSQL, Redis untuk caching, prosesor dengan minimal 4 CPU cores, disk space sebesar 40GB hingga 50GB storage dengan OS Ubuntu 22.04 LTS.
+   Kebutuhan RAM: dibutuhkan minimal 8GB RAM.
+   Instalasi: image Docker resmi sudah lama tidak diperbarui, sehingga dibangun dari source. Butuh sertifikat SSL yang valid.
+   Lisensi: AGPL-3.0.
+
+3. Open eClass (GUnet)
+   Fitur: sistem manajemen kursus untuk menyimpan dan menyajikan materi, dikembangkan jaringan akademik Yunani (GUnet) untuk e-learning asinkron.
+   Kebutuhan server: PHP 8.1 (atau yang lebih baru) dan MySQL 5.7 (atau MariaDB yang setara).
+   Kebutuhan RAM: tidak disebtukan dalam dokumentasi manapun.
+   Instalasi: relatif ringan karena memakai stack PHP + MySQL biasa, tetapi dokumentasi dominan berbahasa Yunani.
+   Lisensi: GNU GPL, open source sejak 2003.
+   
+4. ILIAS
+   Fitur: konsep Personal Desktop dan Repository, akses diatur lewat role-based access control (RBAC). Mendukung SCORM 1.2 dan SCORM 2004.
+   Kebutuhan server: ILIAS 10 membutuhkan PHP 8.2 atau 8.3, database MariaDB (disarankan) atau MySQL 8.0, serta web server Apache atau Nginx. Komponen opsional meliputi Java (untuk pencarian), ffmpeg, dan Ghostscript.
+   Kebutuhan RAM: Ukuran minimum menurut dokumentasi resmi: CPU dual core, RAM 4 GB, dan sekitar 25 GB untuk OS dan ILIAS. Kebutuhan naik seiring jumlah pengguna dan fitur yang aktif.
+   Lisensi: GNU General Public License v3.0
+   Komunitas: berasal dari Jerman, banyak dipakai perguruan tinggi dan instansi pemerintah
+
 | Kriteria | Moodle | Canvas LMS | Open eClass | ILIAS |
 |---|---|---|---|---|
 | Bahasa/teknologi | PHP | Ruby on Rails | PHP | PHP |
