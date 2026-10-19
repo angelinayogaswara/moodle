@@ -182,3 +182,24 @@ Moodle adalah Learning Management System (LMS) gratis dan open-source yang dikem
     curl -I https://moodle-kdjk2.my.id/login/index.php
     curl -I https://moodle-kdjk2.my.id/not/a/valid/request
     ```
+    
+##  Maintenance (opsional)
+
+Setting tambahan untuk maintenance secara periodik, misalnya:
+- buat backup database tiap pekan
+- hapus direktori sampah tiap hari
+- dll
+
+## Cara Pemakaian
+
+**Tampilan Aplikasi Web**
+
+1. Halaman login: Pengguna dapat masuk menggunakan username dan password
+
+2. Dasbor: Berisi daftar mata kuliah, kalender, dan tenggat tugas.
+
+3. Mata Kuliah: Isi mata kuliah dikelompokkan ke beberapa segmen, yaitu materi, tugas, kuis, dan forum.
+
+
+**Fungsi-fungsi Utama**
+Show Image
