@@ -7,8 +7,8 @@ Moodle adalah Learning Management System (LMS) gratis dan open-source yang dikem
 
 ## Instalasi
 
-**## Spesifikasi Server & Identitas Lingkungan**
----
+**Spesifikasi Server & Identitas Lingkungan**
+
 - **Penyedia VPS:** Helipod (Region: ap-jakarta, Indonesia)
 - **Alamat IP Publik:** `43.173.53.5`
 - **Domain Aktif:** `moodle-kdjk2.my.id` (A Record: `43.173.53.5`), `www.moodle-kdjk2.my.id`
@@ -25,9 +25,9 @@ Moodle adalah Learning Management System (LMS) gratis dan open-source yang dikem
   - Firewall internal host (`UFW`) **belum aktif** (`Status: inactive`).
   - Saat ini pengamanan port sepenuhnya bergantung pada **Cloud Firewall Helipod** yang telah dikonfigurasi membuka Port 22 (SSH), Port 80 (HTTP), dan Port 443 (HTTPS).
 
----
 
-**## Proses Instalasi**
+
+**Proses Instalasi**
 
 > [!NOTE]
 > **Kebijakan Keamanan Kredensial:** Seluruh kata sandi (database, akun administrator, dan server) dibuat menggunakan generator acak kriptografi dan hanya tersimpan pada berkas lokal server `/root/moodle-credentials.txt` dengan hak akses terbatas (`chmod 600`). Dokumen ini **tidak memuat password apa pun** demi keamanan laporan publik (*zero hardcoded secrets*).
