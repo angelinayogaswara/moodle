@@ -232,7 +232,7 @@ Moodle adalah Learning Management System (LMS) gratis dan open-source yang dikem
 
 ## Pembahasan
 
-**Tabel Perbandingan**
+**Perbandingan dengan Aplikasi Web Sejenis**
 | Kriteria | Moodle | Canvas LMS | Open eClass | ILIAS |
 |---|---|---|---|---|
 | Bahasa/teknologi | PHP | Ruby on Rails | PHP | PHP |
@@ -245,15 +245,22 @@ Moodle adalah Learning Management System (LMS) gratis dan open-source yang dikem
 | RAM minimal (resmi) | 512 MB (disarankan 1 GB+) | 8 GB | Tidak disebutkan di dokumentasi resmi | 4 GB |
 | Storage awal | 5 GB | 40-50 GB | Tidak disebutkan di dokumentasi resmi | sekitar 25 GB + konten |
 
+**Pendapat**
 RAM minimum resmi Moodle memang kecil (512 MB), tetapi untuk server produksi besar, dokumentasinya menyarankan RAM sebesar 8 GB atau lebih, sehingga kebutuhan riilnya mendekati aplikasi lain.
 
-**Kelebihan Moodle:** komunitas dan plugin terbesar, dukungan banyak database, dokumentasi lengkap, dan instalasi di hosting PHP biasa lebih mudah dibanding Canvas.
+**Kelebihan Moodle**
+- Memiliki komunitas dan plugin terbesar
+- Mendukung banyak jenis database
+- Dokumentasi lengkap
+- Instalasi di hosting PHP biasa lebih mudah dibanding Canvas
 
-**Kekurangan Moodle:** tampilan bawaan kurang modern dibanding Canvas, dan banyaknya pengaturan bisa membingungkan admin baru.
+**Kekurangan Moodle**
+- Tampilan bawaan kurang modern dibanding Canvas
+- Banyak pengaturan dapat membingungkan admin baru
 
-**Pendapat kami:** untuk kampus atau tim kecil yang ingin hosting sendiri, Moodle paling seimbang antara fitur, kemudahan instalasi, dan dukungan komunitas. Canvas unggul di pengalaman pengguna, tetapi pemasangan mandiri lebih berat. Open eClass cocok untuk kebutuhan sederhana, sedangkan ILIAS cocok bila butuh standar SCORM dan kontrol akses rinci.
+Untuk kampus atau tim kecil yang ingin hosting sendiri, Moodle paling seimbang antara fitur, kemudahan instalasi, dan dukungan komunitas. Canvas unggul di pengalaman pengguna, tetapi pemasangan mandiri lebih berat. Open eClass cocok untuk kebutuhan sederhana, sedangkan ILIAS cocok bila butuh standar SCORM dan kontrol akses rinci.
 
-## Sumber
+## Referensi
 
 - https://moodledev.io/docs/5.1/gettingstarted/requirements
 - https://docs.moodle.org/503/en/Installing_Moodle
