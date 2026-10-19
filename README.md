@@ -1,4 +1,5 @@
-[perbandingan (1).md](https://github.com/user-attachments/files/33674451/perbandingan.1.md)# Aplikasi Web "Moodle"
+# Aplikasi Web "Moodle"
+![Logo](dokumentasi/moodle_logo_TM.svg)
 
 ## Sekilas Tentang
 
