@@ -1,4 +1,4 @@
-# Aplikasi Web "Moodle"
+[perbandingan (1).md](https://github.com/user-attachments/files/33674451/perbandingan.1.md)# Aplikasi Web "Moodle"
 
 ## Sekilas Tentang
 
@@ -228,3 +228,43 @@ Moodle adalah Learning Management System (LMS) gratis dan open-source yang dikem
 
    Setelah kuis dikerjakan, mahasiswa dapat membuka halaman tinjauan yang menampilkan status, waktu mulai dan selesai, durasi, serta nilai dari kuis tersebut.
    ![Mahasiswa meninjau hasil kuis](dokumentasi/siswa-review-kuis.png)
+
+## Pembahasan
+
+**Tabel Perbandingan**
+| Kriteria | Moodle | Canvas LMS | Open eClass | ILIAS |
+|---|---|---|---|---|
+| Bahasa/teknologi | PHP | Ruby on Rails | PHP | PHP |
+| Database | MySQL, MariaDB, PostgreSQL, SQL Server, Oracle | PostgreSQL (+ Redis) | MySQL/MariaDB | MySQL/MariaDB |
+| Lisensi | GPL v3 | AGPL-3.0 | GPL | GPL v3 |
+| Kemudahan instalasi | Mudah | Sulit | Mudah sampai sedang | Sedang-Cukup sulit |
+| Komunitas dan plugin | Sangat besar | Besar | Kecil | Sedang |
+| Tampilan | Fungsional, makin modern | Paling modern | Sederhana | Cenderung kaku |
+| Kekuatan utama | Fleksibel, plugin melimpah | UX dan gradebook | Sederhana, kebutuhan software minim | SCORM dan akses terperinci |
+| RAM minimal (resmi) | 512 MB (disarankan 1 GB+) | 8 GB | Tidak disebutkan di dokumentasi resmi | 4 GB |
+| Storage awal | 5 GB | 40-50 GB | Tidak disebutkan di dokumentasi resmi | sekitar 25 GB + konten |
+
+RAM minimum resmi Moodle memang kecil (512 MB), tetapi untuk server produksi besar, dokumentasinya menyarankan RAM sebesar 8 GB atau lebih, sehingga kebutuhan riilnya mendekati aplikasi lain.
+
+**Kelebihan Moodle:** komunitas dan plugin terbesar, dukungan banyak database, dokumentasi lengkap, dan instalasi di hosting PHP biasa lebih mudah dibanding Canvas.
+
+**Kekurangan Moodle:** tampilan bawaan kurang modern dibanding Canvas, dan banyaknya pengaturan bisa membingungkan admin baru.
+
+**Pendapat kami:** untuk kampus atau tim kecil yang ingin hosting sendiri, Moodle paling seimbang antara fitur, kemudahan instalasi, dan dukungan komunitas. Canvas unggul di pengalaman pengguna, tetapi pemasangan mandiri lebih berat. Open eClass cocok untuk kebutuhan sederhana, sedangkan ILIAS cocok bila butuh standar SCORM dan kontrol akses rinci.
+
+## Sumber
+
+- https://moodledev.io/docs/5.1/gettingstarted/requirements
+- https://docs.moodle.org/503/en/Installing_Moodle
+- https://docs.moodle.org/503/en/PHP
+- https://railway.com/deploy/canvas-lms
+- https://gist.github.com/adeel-raza/4eb1dae869c393431df0afda6db6987d
+- https://www.inmotionhosting.com/blog/server-hosting-educational-institutions-lms/
+- https://github.com/gunet/openeclass
+- https://docs.openeclass.org/el/install
+- https://en.wikipedia.org/wiki/ILIAS
+- https://www.ki-syndikat.de/tools/ilias/
+- https://elearningevolve.com/install-canvas-lms/
+- https://fossies.org/linux/ILIAS/docs/configuration/install.md
+- https://github.com/ILIAS-eLearning/ILIAS
+ (1).md…]()
