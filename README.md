@@ -7,7 +7,7 @@ Moodle adalah Learning Management System (LMS) gratis dan open-source yang dikem
 
 ## Instalasi
 
-##**Spesifikasi Server & Identitas Lingkungan**
+**## Spesifikasi Server & Identitas Lingkungan**
 ---
 - **Penyedia VPS:** Helipod (Region: ap-jakarta, Indonesia)
 - **Alamat IP Publik:** `43.173.53.5`
@@ -27,7 +27,7 @@ Moodle adalah Learning Management System (LMS) gratis dan open-source yang dikem
 
 ---
 
-##**Proses Instalasi**
+**## Proses Instalasi**
 
 > [!NOTE]
 > **Kebijakan Keamanan Kredensial:** Seluruh kata sandi (database, akun administrator, dan server) dibuat menggunakan generator acak kriptografi dan hanya tersimpan pada berkas lokal server `/root/moodle-credentials.txt` dengan hak akses terbatas (`chmod 600`). Dokumen ini **tidak memuat password apa pun** demi keamanan laporan publik (*zero hardcoded secrets*).
