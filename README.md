@@ -275,4 +275,3 @@ Untuk kampus atau tim kecil yang ingin hosting sendiri, Moodle paling seimbang a
 - https://elearningevolve.com/install-canvas-lms/
 - https://fossies.org/linux/ILIAS/docs/configuration/install.md
 - https://github.com/ILIAS-eLearning/ILIAS
- (1).md…]()
