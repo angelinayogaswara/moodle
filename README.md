@@ -5,11 +5,11 @@
 
 Moodle adalah Learning Management System (LMS) gratis dan open-source yang dikembangkan oleh Martin Dougiamas menggunakan bahasa pemrograman PHP dan didistribusikan berdasarkan GNU General Public License (GNU GPL). Moodle digunakan untuk menyediakan lingkungan pembelajaran daring yang terpadu bagi pendidik, administrator, serta peserta didik. Versi pertama Moodle dirilis pada 20 Agustus 2002 dan pengembangannya masih terus dilakukan secara aktif di bawah Moodle HQ. Aplikasi Moodle disediakan gratis untuk Android dan iOS.
 
-Pada proyek ini Moodle **5.2.4** dipasang secara manual lewat terminal (tanpa Docker) di dua lingkungan: VM lokal (VirtualBox) dan VPS yang dapat diakses dari internet di **https://moodle-kdjk2.my.id**.
+Pada proyek ini Moodle **5.2.4** dipasang secara manual (tanpa Docker) di dua lingkungan: VM lokal (VirtualBox) dan VPS yang dapat diakses dari internet di **https://moodle-kdjk2.my.id**.
 
 ## Instalasi
 
-Moodle dipasang di dua lingkungan: **VM lokal (VirtualBox)** sebagai dasar, kemudian **VPS** agar dapat diakses dari internet. Langkah di VPS banyak yang sama dengan VM lokal; perbedaan utamanya ada pada domain, HTTPS, dan firewall cloud.
+Moodle dipasang di dua lingkungan: **VM lokal (VirtualBox)** sebagai dasar, kemudian **VPS** agar dapat diakses dari internet. Langkah di VPS banyak yang sama dengan VM lokal; perbedaan utamanya ada pada domain, HTTPS, dan firewall cloud. Nomor build Moodle kedua lingkungan berbeda (VM lokal Build 20261005, VPS Build 20261013) karena `git clone` cabang `MOODLE_502_STABLE` dilakukan pada waktu yang berbeda, bukan karena kesalahan.
 
 ### Instalasi Manual di VM Lokal (VirtualBox)
 
@@ -133,7 +133,7 @@ Ubuntu 24.04 LTS menyediakan PHP 8.3 dan MariaDB 10.11 dari repositori bawaan. K
     Perintah `chown` pada folder `/var/www/moodle` (tanpa `-R`) juga memberi izin tulis sementara agar installer web pada langkah 12 dapat membuat `config.php`.
 
 12. Jalankan installer Moodle lewat browser di `http://localhost:8080/install.php`.
-    - **Konfirmasi jalur:** alamat web `http://localhost:8080`, direktori Moodle `/var/www/moodle`, dan direktori data `/var/moodledata` (nilai bawaan installer `/var/www/moodledata` diganti).
+    - **Konfirmasi jalur:** alamat web `http://localhost:8080`, direktori Moodle `/var/www/moodle`, dan direktori data `/var/moodledata`, yaitu folder yang dibuat pada langkah 8 (nilai bawaan installer menunjuk `/var/www/moodledata`).
     - **Driver basis data:** MariaDB (native/mariadb).
     - **Pengaturan basis data:** host `localhost`, nama `moodle`, pengguna `moodleuser`, kata sandi milik `moodleuser`, prefiks `mdl_`, port dan soket dikosongkan.
     - **Lisensi:** lanjutkan setelah membaca ketentuan GNU GPL v3.
@@ -369,22 +369,22 @@ Ubuntu 24.04 LTS menyediakan PHP 8.3 dan MariaDB 10.11 dari repositori bawaan. K
 | 4 | Installer Moodle: *Access denied for user 'moodleuser'* | VM lokal | Kolom kata sandi basis data terisi nama pengguna | Isi dengan kata sandi yang benar |
 | 5 | Peringatan "Composer installed data not found" | VM lokal | `git clone` tidak menyertakan folder `vendor` | `composer install --no-dev --classmap-authoritative` sebagai `www-data`. Di VPS dicegah dengan menjalankannya sebelum installer |
 | 6 | Halaman "GALAT 404" setelah installer, dan `curl` ke `localhost:8080` dari dalam VM tidak menjawab | VM lokal | Diduga port 8080 hanya ada di sisi Windows dan permintaan folder belum diarahkan ke `index.php` (dugaan) | `Listen 8080`, `<VirtualHost *:80 *:8080>`, dan `DirectoryIndex index.php`; setelahnya Moodle menjawab 303 |
-| 7 | Status "Konfigurasi router: Galat" | VM lokal dan VPS | Handler PHP Apache menangkap URL `.php` yang tidak ada sehingga `FallbackResource` tidak dipanggil | Bungkus `SetHandler` dengan `<If "-f %{REQUEST_FILENAME}">` dan tambahkan `$CFG->routerconfigured = true;` |
-| 8 | Login password ditolak berkali-kali di VPS (SSH dan Terminal web) | VPS | User bawaan image adalah `ubuntu`, bukan `root`, dan password yang berlaku adalah hasil reset dari tab SSH | *Reset Password* di dashboard, login lewat Terminal web sebagai `ubuntu`, lalu pasang kunci publik ke `~/.ssh/authorized_keys` |
+| 7 | Status "Konfigurasi router: Galat" | VM lokal dan VPS | Handler PHP Apache menangkap URL `.php` yang tidak ada sehingga `FallbackResource` tidak dipanggil (penjelasan mengikuti thread forum Moodle) | Bungkus `SetHandler` dengan `<If "-f %{REQUEST_FILENAME}">` dan tambahkan `$CFG->routerconfigured = true;` |
+| 8 | Login password ditolak berkali-kali di VPS (SSH dan Terminal web) | VPS | Menurut support Helipod, user bawaan image adalah `ubuntu` (bukan `root`) dan password diatur lewat *Reset Password* di tab SSH dashboard | Setelah mengikuti arahan itu, login lewat Terminal web sebagai `ubuntu` berhasil; kunci publik laptop lalu dipasang ke `~/.ssh/authorized_keys` agar SSH bisa tanpa password |
 | 9 | Peringatan *Remote host identification has changed* | Laptop | VPS di-*reinstall* sehingga fingerprint host berubah | `ssh-keygen -R 43.173.53.5`, lalu cocokkan fingerprint baru |
 | 10 | HTTPS *timeout* dari internet, padahal Apache menjawab dari dalam server | VPS | Cloud Firewall Helipod hanya membuka port 22, 80, dan Ping | Tambahkan aturan TCP 443 di tab Firewall |
 
 ## Konfigurasi
 
-- **Batas PHP.** Berkas `/etc/php/8.3/apache2/conf.d/99-moodle.ini` (dan salinannya untuk CLI) berisi `max_input_vars = 5000` (dibutuhkan halaman administrasi Moodle), `upload_max_filesize = 100M` dan `post_max_size = 100M` (batas unggah berkas), serta `memory_limit = 256M`. `post_max_size` sengaja dibuat sama dengan batas unggah agar unggahan tidak gagal tanpa pesan.
-- **Zona waktu.** Server memakai `Asia/Jakarta` dan zona waktu bawaan Moodle juga `Asia/Jakarta`. Jika tidak diubah, jam tugas, kuis, dan log meleset 6 sampai 7 jam karena bawaannya mengikuti `Europe/London`.
+- **Batas PHP.** Berkas `/etc/php/8.3/apache2/conf.d/99-moodle.ini` (dan salinannya untuk CLI) berisi `max_input_vars = 5000` (mengikuti rekomendasi dokumentasi Moodle tentang pengaturan PHP, lihat Referensi), `upload_max_filesize = 100M` dan `post_max_size = 100M` (batas unggah berkas), serta `memory_limit = 256M`. `post_max_size` sengaja dibuat sama dengan batas unggah agar unggahan tidak gagal tanpa pesan.
+- **Zona waktu.** Server VPS memakai `Asia/Jakarta` (lewat `timedatectl`). Pada VM lokal, installer Moodle menampilkan zona waktu bawaan `Europe/London` (mengikuti server), lalu diganti menjadi `Asia/Jakarta` agar jam tugas, kuis, dan log tidak meleset. Zona waktu Moodle di VPS belum dicek di *Administrasi situs > Lokasi > Pengaturan lokasi*.
 - **Web root.** Apache diarahkan ke `/var/www/moodle/public`, sedangkan direktori data `/var/moodledata` berada di luar web root.
 - **Router Moodle.** `FallbackResource /r.php`, pembungkus `<If "-f ...">` pada `php8.3.conf`, dan `$CFG->routerconfigured = true;` di `config.php`.
 - **HTTPS.** Sertifikat Let's Encrypt lewat Certbot untuk `moodle-kdjk2.my.id` dan `www`, dengan pengalihan otomatis dari HTTP.
 - **Firewall.** Cloud Firewall Helipod membuka port 22, 80, dan 443.
-- **Izin berkas.** Kode Moodle dimiliki `root` (hanya dapat dibaca web server), sedangkan `/var/moodledata` dimiliki `www-data`.
+- **Izin berkas.** Kode Moodle dimiliki `root` (hanya dapat dibaca web server), sedangkan `/var/moodledata` dimiliki `www-data` (di VPS). Pada VM lokal, penguncian izin kode belum dicek ulang.
 - **Bahasa.** Antarmuka Moodle berbahasa Indonesia.
-- **Plugin dan surel.** Belum ada plugin tambahan yang dipasang. SMTP juga belum dikonfigurasi, sehingga pemberitahuan lewat surel tidak terkirim; notifikasi di dalam Moodle tetap berfungsi.
+- **Plugin dan surel.** Belum ada plugin tambahan yang dipasang. SMTP juga belum dikonfigurasi, sehingga pemberitahuan lewat surel tidak diharapkan terkirim (belum diuji).
 
 ## Maintenance
 
@@ -418,6 +418,7 @@ Ubuntu 24.04 LTS menyediakan PHP 8.3 dan MariaDB 10.11 dari repositori bawaan. K
   (sudo crontab -l 2>/dev/null | grep -v "moodle-backup.sh" || true; echo "0 2 * * 0 /usr/local/bin/moodle-backup.sh >> /var/log/moodle-backup.log 2>&1") | sudo crontab -
   ```
   Skrip sudah dijalankan sekali sebagai uji di VPS dan menghasilkan dua arsip (database dan `moodledata`). **Pemulihan (*restore*) dari arsip ini belum pernah diuji.** Prosedur yang direncanakan, belum dicoba: `gunzip < moodle-db-<tanggal>.sql.gz | sudo mariadb moodle` untuk database dan `sudo tar -xzf moodledata-<tanggal>.tar.gz -C /var` untuk `moodledata`.
+  **Keterbatasan:** arsip disimpan di disk yang sama dengan server, belum ada salinan ke luar server, dan izin bawaan membuat dump database dapat dibaca user lain di server. Perbaikan yang direncanakan, belum diterapkan: `umask 077` di awal skrip dan `sudo chmod 700 /var/backups/moodle`.
 - **Perpanjangan sertifikat.** Certbot memperpanjang sertifikat otomatis. Simulasinya (`sudo certbot renew --dry-run`) berhasil.
 - **Pembaruan paket.** Setelah `apt upgrade`, periksa kembali perbaikan router karena `php8.3.conf` milik paket `libapache2-mod-php8.3` dan dapat tertimpa.
   ```bash
@@ -492,7 +493,7 @@ Data Moodle diambil dari dokumentasi resmi dan pengalaman instalasi sendiri. Dat
    Fitur utama: manajemen kursus dan peserta, tugas dan kuis, forum diskusi, gradebook, dan plugin tambahan. Ekosistem plugin besar dan tersedia dalam lebih dari 100 bahasa.
    Kebutuhan hardware: disk 200 MB untuk kode Moodle ditambah ruang untuk konten (disarankan minimal 5 GB), RAM minimal 512 MB dan disarankan 1 GB atau lebih, serta prosesor minimal 1 GHz (disarankan dual-core 2 GHz). Untuk server produksi besar, disarankan RAM 8 GB atau lebih.
    Lisensi: GNU GPL v3.
-   Teknologi: aplikasi PHP dengan database relasional. Pada installer Moodle 5.2.4 yang dipakai, pilihan driver meliputi MariaDB, MySQL, PostgreSQL, dan SQL Server. Moodle 5.2 membutuhkan PHP 8.3 atau lebih baru (cek server pada instalasi ini menampilkan syarat PHP 8.3.0 dan MariaDB 10.11.0).
+   Teknologi: aplikasi PHP dengan database relasional. Pada installer Moodle 5.2.4 yang dipakai, pilihan driver meliputi MariaDB, MySQL, PostgreSQL, dan SQL Server. Moodle 5.2.4 pada instalasi ini mensyaratkan minimal PHP 8.3.0 dan MariaDB 10.11.0 (sesuai tampilan cek server).
 
 2. Canvas LMS (Instructure)
    Fitur: mengelola kursus, pendaftaran peserta, tugas, kuis, diskusi, dan penilaian. Dikenal dengan UI yang baik dan gradebook yang kuat.
@@ -529,7 +530,7 @@ Data Moodle diambil dari dokumentasi resmi dan pengalaman instalasi sendiri. Dat
 
 **Pendapat**
 
-RAM minimum resmi Moodle memang kecil (512 MB), tetapi untuk server produksi besar dokumentasinya menyarankan RAM 8 GB atau lebih, sehingga kebutuhan riilnya mendekati aplikasi lain. Pada proyek ini VM dan VPS masing-masing diberi 4 GB RAM, dan itu cukup untuk Moodle dengan beberapa pengguna.
+RAM minimum resmi Moodle memang kecil (512 MB), tetapi untuk server produksi besar dokumentasinya menyarankan RAM 8 GB atau lebih, sehingga kebutuhan riilnya mendekati aplikasi lain. Pada proyek ini VM dan VPS masing-masing diberi 4 GB RAM, dan cukup untuk instalasi serta pemakaian dasar; belum diuji dengan banyak pengguna.
 
 Dari pengalaman instalasi, Moodle 5.2 dari git tidak sesederhana yang tertulis pada tabel perbandingan umum. Selain stack LAMP, ada beberapa langkah tambahan yang tidak tampak jelas di awal: dependensi Composer, Apache yang harus diarahkan ke folder `public`, dan perbaikan router agar status administrasi tidak Galat. Masalah-masalah itu tercatat pada bagian Masalah yang Ditemui dan dapat diselesaikan dengan dokumentasi resmi serta forum Moodle, tetapi memakan waktu bagi pemula. Setelah terpasang, penggunaan Moodle sehari-hari (membuat mata kuliah, tugas, dan kuis) cukup jelas dilakukan lewat antarmuka web.
 
