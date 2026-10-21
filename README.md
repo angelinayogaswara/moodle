@@ -1,6 +1,19 @@
 # Aplikasi Web "Moodle"
 ![Logo](dokumentasi/moodle_logo_TM.svg)
 
+**Proyek Akhir Komunikasi Data dan Jaringan Komputer (KDJK)**
+**Kelompok 2, Paralel 1**
+
+| No | Nama | NIM |
+| :-- | :-- | :-- |
+| 1 | Naurah Tri Mudawwinah | M0403241026 |
+| 2 | Angelina Yogaswara | M0403241039 |
+| 3 | Filzah Alexandra Athaillah | M0403241094 |
+| 4 | Kevin Neisa Aula Iskandar | M0403241101 |
+| 5 | Naura Girlastin Bachri | M0403241124 |
+
+Situs yang berjalan: https://moodle-kdjk2.my.id
+
 ## Sekilas Tentang
 
 Moodle adalah Learning Management System (LMS) gratis dan open-source yang dikembangkan oleh Martin Dougiamas menggunakan bahasa pemrograman PHP dan didistribusikan berdasarkan GNU General Public License (GNU GPL). Moodle digunakan untuk menyediakan lingkungan pembelajaran daring yang terpadu bagi pendidik, administrator, serta peserta didik. Versi pertama Moodle dirilis pada 20 Agustus 2002 dan pengembangannya masih terus dilakukan secara aktif di bawah Moodle HQ. Aplikasi Moodle disediakan gratis untuk Android dan iOS.
