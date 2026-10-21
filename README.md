@@ -7,6 +7,167 @@ Moodle adalah Learning Management System (LMS) gratis dan open-source yang dikem
 
 ## Instalasi
 
+Moodle dipasang di dua lingkungan: **VM lokal (VirtualBox)** secara manual sebagai dasar, kemudian **VPS** agar dapat diakses dari internet.
+
+### Instalasi Manual di VM Lokal (VirtualBox)
+
+**Prasyarat**
+
+- **Host:** laptop Windows dengan RAM 16 GB dan Oracle VirtualBox
+- **Spesifikasi VM:** 2 vCPU, 4096 MB RAM, disk virtual 30 GB (VDI)
+- **Sistem Operasi:** Ubuntu Server 24.04.5 LTS (Noble Numbat), dari ISO `ubuntu-24.04.5-live-server-amd64.iso`
+- **Jaringan VM:** NAT dengan port forwarding `2222 → 22` (SSH), `8080 → 80` (HTTP), dan `8443 → 443` (HTTPS)
+- **Web Server:** Apache/2.4.58 (Ubuntu)
+- **Database Server:** MariaDB Server 10.11.14
+- **Bahasa Pemrograman / Runtime:** PHP 8.3.6 (OPcache aktif)
+- **Versi Moodle:** 5.2.4 (Build: 20261005), cabang `MOODLE_502_STABLE`
+- **Alamat Akses:** `http://localhost:8080` (dari laptop host)
+
+Ubuntu 24.04 LTS menyediakan PHP 8.3 dan MariaDB 10.11 dari repositori bawaan. Keduanya sesuai dengan syarat yang ditampilkan cek server Moodle (PHP minimal 8.3.0 dan MariaDB minimal 10.11.0).
+
+**Proses Instalasi**
+
+1. Buat VM di VirtualBox. Klik **New**, beri nama `moodle-server`, pilih file ISO Ubuntu Server, lalu atur Base Memory 4096 MB, 2 CPU, dan disk virtual 30 GB berformat VDI tanpa *Pre-allocate Full Size*. Lepaskan centang *Proceed with Unattended Installation* agar installer dijalankan secara manual, dan biarkan *Use EFI* tidak dicentang.
+
+2. Sebelum VM dinyalakan, buka **Settings > Network > Adapter 1 > Port Forwarding** dan tambahkan tiga aturan berikut (kolom Guest IP dikosongkan).
+
+   | Nama | Protokol | Host Port | Guest Port |
+   | :--- | :--- | :--- | :--- |
+   | SSH | TCP | 2222 | 22 |
+   | HTTP | TCP | 8080 | 80 |
+   | HTTPS | TCP | 8443 | 443 |
+
+3. Nyalakan VM dan ikuti installer Ubuntu Server. Kosongkan proxy, pakai mirror `http://id.archive.ubuntu.com/ubuntu/`, isi profil (nama server `moodle`, user `adminmoodle`), centang **Install OpenSSH server**, dan jangan pilih *featured server snaps*. Setelah instalasi selesai, pilih **Reboot Now** sampai muncul prompt `moodle login:`.
+
+4. Jendela VM tidak mendukung *paste*, jadi perintah selanjutnya dijalankan lewat **PowerShell di Windows**. Masuk ke VM lewat SSH, lalu perbarui sistem.
+   ```powershell
+   ssh -p 2222 adminmoodle@127.0.0.1
+   ```
+   ```bash
+   sudo apt update && sudo apt upgrade -y
+   ```
+
+5. Perbesar partisi root. Installer hanya memakai separuh disk virtual: volume `ubuntu-lv` terlihat 14 GiB, dan setelah diperbesar menjadi 28 GiB.
+   ```bash
+   sudo lvs
+   sudo vgs
+   sudo lvextend -r -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
+   df -h /
+   ```
+
+6. Pasang Apache, MariaDB, PHP 8.3, dan ekstensi yang dibutuhkan Moodle, lalu cek versinya.
+   ```bash
+   sudo apt install -y apache2 mariadb-server libapache2-mod-php \
+       php php-cli php-mysql php-curl php-gd php-intl php-mbstring php-xml php-zip php-soap \
+       unzip git curl
+   php -v
+   apache2 -v
+   mariadb --version
+   ```
+
+7. Amankan MariaDB, lalu buat database dan user khusus Moodle dengan hak terbatas. Jalankan perintah SQL **satu per satu**; jika beberapa baris di-*paste* sekaligus, perintah dapat menempel dan tidak dijalankan.
+   ```bash
+   sudo mysql_secure_installation
+   sudo mariadb
+   ```
+   ```sql
+   CREATE DATABASE moodle DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   CREATE USER 'moodleuser'@'localhost' IDENTIFIED BY '<password>';
+   GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,CREATE TEMPORARY TABLES,DROP,INDEX,ALTER ON moodle.* TO 'moodleuser'@'localhost';
+   FLUSH PRIVILEGES;
+   EXIT;
+   ```
+   Uji login user baru. Hasil yang benar: daftar berisi `information_schema` dan `moodle`.
+   ```bash
+   mariadb -u moodleuser -p -e "SHOW DATABASES;"
+   ```
+
+8. Unduh Moodle lewat git dan buat direktori `moodledata` di luar *document root*.
+   ```bash
+   sudo git clone --depth 1 --branch MOODLE_502_STABLE https://github.com/moodle/moodle.git /var/www/moodle
+   grep -E "release|version " /var/www/moodle/public/version.php
+   sudo mkdir /var/moodledata
+   sudo chown -R www-data:www-data /var/moodledata
+   sudo chmod 770 /var/moodledata
+   ```
+
+9. Sesuaikan konfigurasi PHP untuk Apache dan CLI.
+   ```bash
+   sudo bash -c 'printf "max_input_vars = 5000\nupload_max_filesize = 100M\npost_max_size = 100M\nmemory_limit = 256M\n" > /etc/php/8.3/apache2/conf.d/99-moodle.ini'
+   sudo cp /etc/php/8.3/apache2/conf.d/99-moodle.ini /etc/php/8.3/cli/conf.d/99-moodle.ini
+   ```
+
+10. Arahkan Apache ke folder `public`. Port 8080 ikut didengarkan di dalam VM agar alamat situs `http://localhost:8080` juga terjangkau dari dalam VM.
+    ```bash
+    sudo tee /etc/apache2/sites-available/moodle.conf > /dev/null <<'EOF'
+    <VirtualHost *:80 *:8080>
+        ServerName localhost
+        DocumentRoot /var/www/moodle/public
+        <Directory /var/www/moodle/public>
+            AllowOverride None
+            Require all granted
+            DirectoryIndex index.php
+            FallbackResource /r.php
+        </Directory>
+        ErrorLog ${APACHE_LOG_DIR}/moodle_error.log
+        CustomLog ${APACHE_LOG_DIR}/moodle_access.log combined
+    </VirtualHost>
+    EOF
+    grep -q "Listen 8080" /etc/apache2/ports.conf || echo "Listen 8080" | sudo tee -a /etc/apache2/ports.conf
+    sudo a2dissite 000-default
+    sudo a2ensite moodle
+    sudo apache2ctl configtest
+    sudo systemctl restart apache2
+    ```
+
+11. Pasang dependensi Composer. Cek server Moodle menampilkan peringatan "Composer installed data not found" karena unduhan lewat git tidak menyertakan folder `vendor`.
+    ```bash
+    sudo apt install -y composer
+    sudo chown www-data:www-data /var/www/moodle
+    cd /var/www/moodle
+    sudo -u www-data env COMPOSER_HOME=/tmp/composer composer install --no-dev --classmap-authoritative
+    ls /var/www/moodle/vendor
+    ```
+
+12. Jalankan installer Moodle lewat browser di `http://localhost:8080/install.php`.
+    - **Konfirmasi jalur:** alamat web `http://localhost:8080`, direktori Moodle `/var/www/moodle`, dan direktori data `/var/moodledata`.
+    - **Driver basis data:** MariaDB (native/mariadb).
+    - **Pengaturan basis data:** host `localhost`, nama `moodle`, pengguna `moodleuser`, kata sandi milik `moodleuser`, prefiks `mdl_`, port dan soket dikosongkan.
+    - **Lisensi:** lanjutkan setelah membaca ketentuan GNU GPL v3.
+    - **Cek server:** semua baris pada tabel "Cek server" berstatus OK. Bagian "Cek lainnya" masih menampilkan peringatan router dan HTTPS (peringatan Composer hilang setelah langkah 11).
+    - **Akun admin:** isi nama pengguna, kata sandi yang kuat, surel, negara, dan zona waktu.
+    - **Setelan beranda situs:** isi nama situs, pilih zona waktu bawaan `Asia/Jakarta`, dan biarkan pendaftaran mandiri **Nonaktif**.
+
+    Setelah disimpan, dashboard terbuka di `http://localhost:8080/my/` dengan tulisan "Selamat datang, Admin!".
+
+13. Perbaiki router Moodle. Halaman **Administrasi situs > Laporan > Status** awalnya menampilkan "Konfigurasi router: Galat". Tambahkan flag di `config.php`, lalu bungkus `SetHandler` PHP dengan kondisi file benar-benar ada.
+    ```bash
+    sudo sed -i '/lib\/setup.php/i $CFG->routerconfigured = true;' /var/www/moodle/config.php
+    sudo cp /etc/apache2/mods-available/php8.3.conf /root/php8.3.conf.bak
+    sudo sed -i 's|^\(\s*\)SetHandler application/x-httpd-php$|\1<If "-f %{REQUEST_FILENAME}">\n\1    SetHandler application/x-httpd-php\n\1</If>|' /etc/apache2/mods-available/php8.3.conf
+    sudo apache2ctl configtest
+    sudo systemctl restart apache2
+    ```
+    Berkas `php8.3.conf` diduga milik paket `libapache2-mod-php8.3`, sehingga setelah `apt upgrade` perubahan ini perlu dicek ulang.
+
+14. Pasang cron Moodle agar tugas terjadwal berjalan tiap menit.
+    ```bash
+    echo "* * * * * /usr/bin/php /var/www/moodle/admin/cli/cron.php >/dev/null" | sudo crontab -u www-data -
+    sudo crontab -u www-data -l
+    ```
+
+15. Verifikasi dari terminal VM.
+    ```bash
+    curl -sI http://localhost:8080/ | head -1
+    curl -sI http://localhost:8080/lib/exampleshimroute2.php | head -1
+    curl -sI http://localhost:8080/not/a/valid/request | head -1
+    ```
+    Hasil yang terlihat: `HTTP/1.1 303 See Other` (pengalihan dari Moodle), `HTTP/1.1 302 Found`, dan `HTTP/1.1 404 Not Found`. Halaman Status Moodle menampilkan Lingkungan, Peningkatan, Konfigurasi router, dan Cron berjalan berstatus **OK**, sedangkan Antivirus **N/A** karena tidak ada pemindai yang diaktifkan.
+
+> **Catatan VM lokal.** HTTPS tidak dipasang di VM lokal, sehingga alamat situs tetap `http://localhost:8080`. Hal-hal berikut belum terkonfirmasi pada VM lokal: pengubahan direktori data di installer ke `/var/moodledata` (layar awal menampilkan `/var/www/moodledata`), pemasangan crontab beserta tes manualnya (`sudo -u www-data /usr/bin/php /var/www/moodle/admin/cli/cron.php`), penguncian izin kode (`chown -R root:root /var/www/moodle`), `ServerName` global Apache (peringatan `AH00558` masih muncul), dan pembatasan Host IP port forwarding ke `127.0.0.1`.
+
+### Instalasi di VPS (Helipod)
+
 **Prasyarat**
 
 - **Penyedia VPS:** Helipod (Region: ap-jakarta, Indonesia)
@@ -303,3 +464,6 @@ Untuk kampus atau tim kecil yang ingin hosting sendiri, Moodle paling seimbang a
 - https://elearningevolve.com/install-canvas-lms/
 - https://fossies.org/linux/ILIAS/docs/configuration/install.md
 - https://github.com/ILIAS-eLearning/ILIAS
+- https://docs.moodle.org/501/en/Configuring_the_Router
+- https://moodle.org/mod/forum/discuss.php?d=481917
+- https://ubuntu.com/download/server
